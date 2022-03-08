@@ -34,6 +34,18 @@ void parse_pkt(const unsigned char *pkt, int len)
 		return;
 	}
 	/* TODO 1: Print the Ethernet Hdr Fields */
+	// ideas from https://stackoverflow.com/a/5712681
+	printf(
+        "Destination MAC: %02X:%02X:%02X:%02X:%02X:%02X\n",
+        eh->h_dest[0], eh->h_dest[1], eh->h_dest[2],
+        eh->h_dest[3], eh->h_dest[4], eh->h_dest[5]
+    );
+
+	printf(
+        "Sender MAC: %02X:%02X:%02X:%02X:%02X:%02X\n",
+        eh->h_source[0], eh->h_source[1], eh->h_source[2],
+        eh->h_source[3], eh->h_source[4], eh->h_source[5]
+    );
 	if (ntohs(eh->h_proto) != ETH_P_IP)
 	{
 		printf("Non-IP Hdr follows. Skipping ...\n");
@@ -46,7 +58,25 @@ void parse_pkt(const unsigned char *pkt, int len)
 		printf("Incomplete Packet. Aborting ... \n");
 		return;
 	}
+	/*
+			version:4;
+	__u8	tos;
+	__be16	tot_len;
+	__be16	id;
+	__be16	frag_off;
+	__u8	ttl;
+	__u8	protocol;
+	__sum16	check;
+	__be32	saddr;
+	__be32	daddr; */
 	/* TODO 2: Print the IP Hdr Fields */
+	printf("ID: 0x%04hX\n",ntohs(ih->id));
+	printf("Fragment Offset: %hu \n",ntohs(ih->frag_off));
+	printf ("IP TTL = %d\n", ih->ttl);
+    printf ("IP check sum = 0x%02hhX\n", ntohs(ih->check));
+	printf("Protocol : 0x%02hhX \n",ih->protocol);
+    printf ("src IP = %d.%d.%d.%d\n", ih->saddr & 0x000000FF, (ih->saddr & 0x0000FF00) >> 8, (ih->saddr & 0x00FF0000) >> 16,(ih->saddr & 0xFF000000) >> 24);
+	printf ("dst IP = %d.%d.%d.%d\n", ih->daddr & 0x000000FF, (ih->daddr & 0x0000FF00) >> 8, (ih->daddr & 0x00FF0000) >> 16,(ih->daddr & 0xFF000000) >> 24);
 	parsed_hdr_size += sizeof(struct iphdr);
 	if (ih->protocol == IPPROTO_UDP)
 	{
@@ -56,7 +86,19 @@ void parse_pkt(const unsigned char *pkt, int len)
 			printf("Incomplete Packet. Aborting ... \n");
 			return;
 		}
-		/* TODO 3: Print the UDP Hdr Fields */
+		/* TODO 3: Print the UDP Hdr Fields
+		struct udphdr {
+			__be16	source;
+			__be16	dest;
+			__be16	len;
+			__sum16	check;
+		};
+		*/
+
+		printf("UDP Src port: %d\n",ntohs(uh->source));
+    	printf("UDP Dst port: %d\n",ntohs(uh->dest));
+		printf("Hdr + Data Len: %hu, \n",ntohs(uh->len));
+		printf("Chksum: 0x%04X\n",ntohs(uh->check));
 		parsed_hdr_size += sizeof(struct udphdr);
 	}
 	else if (ih->protocol == IPPROTO_TCP)
@@ -68,6 +110,12 @@ void parse_pkt(const unsigned char *pkt, int len)
 			return;
 		}
 		/* TODO 4: Print the TCP Hdr Fields */
+		printf("TCP Src port: %d\n",ntohs(th->source));
+    	printf("TCP Dst port: %d\n",ntohs(th->dest));
+		printf("TCP window: %hu\n",ntohs(th->window));
+		printf("TCP checksum: 0x%04hX\n", ntohs(th->check));
+		printf("Seq: %u",ntohl(th->seq));
+		printf("Ack no.: %u",ntohl(th->ack_seq));
 		parsed_hdr_size += sizeof(struct tcphdr);
 	}
 	else
