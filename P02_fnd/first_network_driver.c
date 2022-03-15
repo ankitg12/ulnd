@@ -20,7 +20,10 @@ static int fnd_init(void)
 
 	iprintk("init\n");
 
-	ndev = alloc_etherdev(sizeof(DrvPvt));
+	// ndev = alloc_etherdev(sizeof(DrvPvt));
+	ndev = alloc_netdev(sizeof(DrvPvt), "ankitg", ether_setup);
+	// ndev = alloc_netdev(0, "net%d", NET_NAME_UNKNOWN, netdev_setup);
+	// ret = register_netdev(my_netdev);
 	if (!ndev)
 	{
 		eprintk("device allocation failed\n");

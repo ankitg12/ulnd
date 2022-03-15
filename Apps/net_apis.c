@@ -33,7 +33,7 @@ int get_mac_addr(const char *iface, char *macaddr)
 		return -1;
 	}
 	strncpy(ifr.ifr_name, iface, IFNAMSIZ - 1);
-	if (ioctl(fd, 0 /* TODO 1: Fill in the correct command */, &ifr) == -1)
+	if (ioctl(fd, SIOCGIFHWADDR, &ifr) == -1)
 	{
 		perror("ioctl get i/f mac addr");
 		close(fd);
@@ -60,7 +60,7 @@ int set_mac_addr(const char *iface, const char *macaddr)
 	ifr.ifr_hwaddr.sa_family = ARPHRD_ETHER;
 	mac = ifr.ifr_hwaddr.sa_data;
 	sscanf(macaddr, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx", &mac[0], &mac[1], &mac[2], &mac[3], &mac[4], &mac[5]);
-	if (ioctl(fd, 0 /* TODO 2: Fill in the correct command */, &ifr) == -1)
+	if (ioctl(fd, SIOCSIFHWADDR, &ifr) == -1)
 	{
 		perror("ioctl set i/f mac addr");
 		close(fd);
@@ -82,7 +82,7 @@ int get_ip_addr(const char *iface, char *ipaddr, char *nmask)
 		return -1;
 	}
 	strncpy(ifr.ifr_name, iface, IFNAMSIZ - 1);
-	if (ioctl(fd, 0 /* TODO 3: Fill in the correct command */, &ifr) == -1)
+	if (ioctl(fd, SIOCGIFADDR, &ifr) == -1)
 	{
 		perror("ioctl get i/f ip addr");
 		close(fd);
@@ -93,7 +93,7 @@ int get_ip_addr(const char *iface, char *ipaddr, char *nmask)
 	if (nmask)
 	{
 		strncpy(ifr.ifr_name, iface, IFNAMSIZ - 1);
-		if (ioctl(fd, 0 /* TODO 4: Fill in the correct command */, &ifr) == -1)
+		if (ioctl(fd, SIOCGIFNETMASK, &ifr) == -1)
 		{
 			perror("ioctl get i/f net mask");
 			close(fd);
@@ -121,7 +121,7 @@ int set_ip_addr(const char *iface, const char *ipaddr, const char *nmask)
 	saddr = (struct sockaddr_in *)(&ifr.ifr_addr);
 	saddr->sin_family = AF_INET;
 	inet_aton(ipaddr, &saddr->sin_addr);
-	if (ioctl(fd, 0 /* TODO 5: Fill in the correct command */, &ifr) == -1)
+	if (ioctl(fd, SIOCSIFADDR, &ifr) == -1)
 	{
 		perror("ioctl set i/f ip addr");
 		close(fd);
@@ -133,7 +133,7 @@ int set_ip_addr(const char *iface, const char *ipaddr, const char *nmask)
 		saddr = (struct sockaddr_in *)(&ifr.ifr_netmask);
 		saddr->sin_family = AF_INET;
 		inet_aton(nmask, &saddr->sin_addr);
-		if (ioctl(fd, 0 /* TODO 6: Fill in the correct command */, &ifr) == -1)
+		if (ioctl(fd, SIOCSIFNETMASK, &ifr) == -1)
 		{
 			perror("ioctl set i/f net mask");
 			close(fd);
@@ -155,7 +155,7 @@ int get_if_state(const char *iface, int *up, int *promisc)
 		return -1;
 	}
 	strncpy(ifr.ifr_name, iface, IFNAMSIZ - 1);
-	if (ioctl(fd, 0 /* TODO 7: Fill in the correct command */, &ifr) == -1)
+	if (ioctl(fd, SIOCGIFFLAGS, &ifr) == -1)
 	{
 		perror("ioctl get i/f state");
 		close(fd);
@@ -213,7 +213,7 @@ int set_if_state(const char *iface, const int *up, const int *promisc)
 			ifr.ifr_flags &= ~IFF_PROMISC;
 		}
 	}
-	if (ioctl(fd, 0 /* TODO 8: Fill in the correct command */, &ifr) == -1)
+	if (ioctl(fd,SIOCSIFFLAGS, &ifr) == -1)
 	{
 		perror("ioctl set i/f state");
 		close(fd);
@@ -234,7 +234,7 @@ int get_if_index(const char *iface, int *iface_index)
 		return -1;
 	}
 	strncpy(ifr.ifr_name, iface, IFNAMSIZ - 1);
-	if (ioctl(fd, 0 /* TODO 9: Fill in the correct command */, &ifr) == -1)
+	if (ioctl(fd, SIOCGIFINDEX, &ifr) == -1)
 	{
 		perror("ioctl get i/f index");
 		close(fd);
@@ -257,7 +257,7 @@ int set_if_name(const char *iface, const char *iface_new)
 	}
 	strncpy(ifr.ifr_name, iface, IFNAMSIZ - 1);
 	strncpy(ifr.ifr_newname, iface_new, IFNAMSIZ - 1);
-	if (ioctl(fd, 0 /* TODO 10: Fill in the correct command */, &ifr) == -1)
+	if (ioctl(fd, SIOCSIFNAME, &ifr) == -1)
 	{
 		perror("ioctl set i/f name");
 		close(fd);

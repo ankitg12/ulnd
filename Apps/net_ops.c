@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 #include <linux/if.h> // for IFNAMSIZ
 
 // For open, ...
@@ -254,12 +256,12 @@ int main(int argc, char *argv[])
 				}
 				break;
 			case 6:
-				printf("Enter I/F State (0 for DOWN, 1 for UP): ");
-				scanf("%d", &iface_up);
+				// printf("Enter I/F State (0 for DOWN, 1 for UP): ");
+				// scanf("%d", &iface_up);
 				// TODO 1: Comment the first, and uncomment the 2nd & 3rd lines to play w/ promiscuous mode
 				iface_promisc = 0;
-				//printf("Enter I/F Mode (0 for NORMAL, 1 for PROMISCUOUS): ");
-				//scanf("%d", &iface_promisc);
+				printf("Enter I/F Mode (0 for NORMAL, 1 for PROMISCUOUS): ");
+				scanf("%d", &iface_promisc);
 				if (set_if_state(iface, &iface_up, &iface_promisc) != -1)
 				{
 					printf("%s is now %s%s\n", iface, (iface_up ? "UP" : "DOWN"),

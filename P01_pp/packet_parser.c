@@ -58,7 +58,7 @@ void parse_pkt(const unsigned char *pkt, int len)
 		printf("Incomplete Packet. Aborting ... \n");
 		return;
 	}
-	/*
+	/*	
 			version:4;
 	__u8	tos;
 	__be16	tot_len;
@@ -86,7 +86,7 @@ void parse_pkt(const unsigned char *pkt, int len)
 			printf("Incomplete Packet. Aborting ... \n");
 			return;
 		}
-		/* TODO 3: Print the UDP Hdr Fields
+		/* TODO 3: Print the UDP Hdr Fields 
 		struct udphdr {
 			__be16	source;
 			__be16	dest;

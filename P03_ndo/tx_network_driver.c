@@ -109,6 +109,10 @@ static void display_packet(struct sk_buff *skb)
 static int tnd_open(struct net_device *dev)
 {
 	iprintk("open\n");
+	dev->stats.tx_dropped=4;
+	dev->stats.tx_errors=3;
+	dev->stats.rx_dropped=2;
+	dev->stats.rx_errors=1;
 	return 0;
 }
 static int tnd_close(struct net_device *dev)
@@ -123,7 +127,15 @@ static int tnd_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	iprintk("tx\n");
 	display_packet(skb);
 	// TODO 4: Uncomment the following to see the statistics effect
-	//dev->stats.tx_dropped++;
+	// 
+	dev->stats.tx_packets++;
+	iprintk("Packet num %u \n",dev->stats.tx_packets);
+	if (dev->stats.tx_packets % 2 == 0) {
+		iprintk("Even numbered packet. Marking packet as DROPPED ... \n");
+		dev->stats.tx_dropped++;
+	} else {
+		iprintk("Odd numbered packet. NOT marking packet as DROPPED ... \n");
+	}
 	dev_kfree_skb(skb); // As we are not using it any further
 	return 0;
 }
@@ -140,7 +152,7 @@ static int tnd_set_mac_address(struct net_device *dev, void *addr)
 //static int (*ndo_change_mtu)(struct net_device *dev, int new_mtu);
 //static void (*ndo_tx_timeout)(struct net_device *dev, unsigned int txqueue);
 
-#if 0 // Not required
+#if 1 // Not required
 static struct net_device_stats *tnd_get_stats(struct net_device *dev)
 {
 	iprintk("stats\n");
@@ -151,16 +163,16 @@ static struct net_device_stats *tnd_get_stats(struct net_device *dev)
 static const struct net_device_ops tnd_netdev_ops =
 {
 	// TODO 2: Uncomment the following only if required to do some custom initialization & see up connection
-	//.ndo_open = tnd_open,
+	.ndo_open = tnd_open,
 	// TODO 3: Uncomment the following only if required to do some custom cleanup & see down connection
-	//.ndo_stop = tnd_close,
+	.ndo_stop = tnd_close,
 	.ndo_start_xmit = tnd_start_xmit, // Required on "up", as packets are being sent out on up
 	// For specific hardware level rx configs. TODO 5: Uncoment to see the trigger for promiscuous mode
-	//.ndo_change_rx_flags = tnd_change_rx_flags,
+	.ndo_change_rx_flags = tnd_change_rx_flags,
 	// TODO 1: Uncomment to allow MAC Address change
-	//.ndo_set_mac_address = tnd_set_mac_address,
+	.ndo_set_mac_address = tnd_set_mac_address,
 	// Not really required
-	//.ndo_get_stats = tnd_get_stats,
+	.ndo_get_stats = tnd_get_stats,
 };
 
 static int tnd_init(void)

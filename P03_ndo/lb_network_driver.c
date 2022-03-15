@@ -153,6 +153,7 @@ static int lnd_start_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	// Loopback Hack: Store for pkt received
 	pvt->skb = skb;
+	napi_schedule(&pvt->napi); // TODO
 	spin_unlock_irqrestore(&pvt->lock, flags);
 
 	// Loopback Hack: Trigger poll for pkt received
